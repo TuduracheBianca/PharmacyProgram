@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox prefHeight="503.0" prefWidth="705.0" styleClass="login-background" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12" fx:controller="com.example.labiss.controller.LoginController">
+
+   <ImageView fitHeight="200" preserveRatio="true">
+      <Image url="@/images/hospital_background.jpg" />
+   </ImageView>
+
+   <VBox styleClass="login-container">
+      <Label styleClass="title" text="Hospital Pharmacy Login" />
+
+      <TextField fx:id="usernameField" promptText="Username" styleClass="input-field" />
+      <PasswordField fx:id="passwordField" promptText="Password" styleClass="input-field" />
+
+      <Button fx:id="loginButton" onAction="#handleLogin" styleClass="primary-button" text="Login" />
+      <Button fx:id="registerButton" onAction="#handleShowRegistration" styleClass="secondary-button" text="Register" />
+
+      <Label fx:id="errorLabel" styleClass="error-label" />
+
+      <VBox fx:id="registrationPane" styleClass="registration-pane">
+         <TextField fx:id="newUsernameField" promptText="New Username" styleClass="input-field" />
+         <PasswordField fx:id="newPasswordField" promptText="New Password" styleClass="input-field" />
+         <ComboBox fx:id="roleComboBox" promptText="Select Role" styleClass="input-field" />
+         <ComboBox fx:id="departmentComboBox" promptText="Select Department" styleClass="input-field" />
+         <Button onAction="#handleRegister" styleClass="primary-button" text="Complete Registration" />
+      </VBox>
+   </VBox>
+</VBox>

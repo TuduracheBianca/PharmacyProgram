@@ -1,0 +1,13 @@
+.root {
+    -fx-background-image: url("../../../images/hospital_background.jpg");
+    -fx-background-size: cover;
+    -fx-background-position: center;
+}
+/*.black-button{*/
+/*    -fx-background-color: black;*/
+/*    -fx-text-fill: white;*/
+/*    -fx-font-size: 14px;*/
+/*    -fx-font-weight: bold;*/
+/*    -fx-border-radius: 5px;*/
+/*    -fx-background-radius: 5px;*/
+/*}*/
