@@ -34,5 +34,7 @@ public class UserService {
     }
 
 
-
+    public int getUserSectionCode(String usernameUsed) {
+        return userRepository.getCodeByUsername(usernameUsed);
+    }
 }

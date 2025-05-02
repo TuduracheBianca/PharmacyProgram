@@ -114,13 +114,13 @@ public class SQLUserRepository implements AutoCloseable {
         }
         return false;
     }
-    public String getPaswordByUsername(String username) {
+    public int getCodeByUsername(String username) {
         for (User user : users) {
             if (username.equals(user.getName())) {
-                return user.getPassword();
+                return user.getSectionCode();
             }
         }
-        return null;
+        return -1;
     }
 
     public List<User> getUsers() {

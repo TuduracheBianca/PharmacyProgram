@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="502.0" prefWidth="882.0" style="-fx-background-image: i103748-chirurgie.jpg;" stylesheets="@../Chirurgie.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.labiss.controller.MedicalOrder">
+   <children>
+      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="89.0" layoutY="14.0" prefHeight="41.0" prefWidth="657.0" style="-fx-background-color: #67b1b4; -fx-background-radius: 15;" text="CHIRURGIE" textFill="#010375">
+         <font>
+            <Font name="Impact" size="27.0" />
+         </font>
+      </Label>
+
+      <MenuButton fx:id="Options" alignment="CENTER" layoutX="22.0" layoutY="67.0" mnemonicParsing="false" prefHeight="53.0" prefWidth="134.0" style="-fx-background-radius: 10 20 10 20;" text="OPTIONS" textFill="#67b1b4">
+        <items>
+          <MenuItem fx:id="comanda" onAction="#Order"  mnemonicParsing="false" text="Creeaza comanda" />
+          <MenuItem fx:id="cos"  mnemonicParsing="false" text="Afiseaza cos" />
+        </items>
+         <font>
+            <Font name="Sitka Text" size="14.0" />
+         </font>
+      </MenuButton>
+
+       <!-- Tabel pentru medicamente (vizibil doar când se apasă "Comandă nouă") -->
+      <TableView fx:id="Tabel_medicamente" layoutX="294.0" layoutY="96.0" prefHeight="401.0" prefWidth="544.0" visible="true">
+        <columns>
+          <TableColumn fx:id="colName" prefWidth="200.0" text="Name" />
+          <TableColumn fx:id="colUnit" minWidth="7.20001220703125" prefWidth="129.19998168945312" text="Unit of measure" />
+            <TableColumn fx:id="colAvailability" minWidth="0.0" prefWidth="98.0" text="Availability" />
+            <TableColumn fx:id="colCategory" prefWidth="112.60003662109375" text="Category" />
+        </columns>
+      </TableView>
+
+       <!-- Tabel pentru comandă (vizibil doar când se apasă "Coș") -->
+       <TableView fx:id="Tabel_comanda" layoutX="294.0" layoutY="96.0" prefHeight="401.0" prefWidth="544.0" visible="false">
+           <columns>
+               <TableColumn fx:id="colComandaName" prefWidth="200.0" text="Medication" />
+               <TableColumn fx:id="colComandaUnit" prefWidth="150.0" text="Unit" />
+               <TableColumn fx:id="colComandaQuantity" prefWidth="150.0" text="Quantity" />
+           </columns>
+       </TableView>
+      <TextField fx:id="search" layoutX="426.0" layoutY="67.0" prefHeight="26.0" prefWidth="412.0" promptText="Search" />
+   </children>
+</AnchorPane>

@@ -3,12 +3,18 @@ package com.example.labiss.controller;
 import domain.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.stage.Stage;
 import repository.SQLSectionRepository;
 import repository.SQLUserRepository;
 import service.UserService;
+
+import java.io.IOException;
 
 public class LoginController {
     public PasswordField password;
@@ -87,6 +93,8 @@ public class LoginController {
             boolean loginSuccessful = userservice.loginUser(username_used,password_used);
             if(loginSuccessful){
                 showSucces("Succsesfully logged in!");
+                int sectionCode = userservice.getUserSectionCode(username_used);
+                openTerminalForSection(sectionCode);
             }else{
                 showError("Incorrect username or password!");
             }
@@ -95,6 +103,50 @@ public class LoginController {
         }finally {
             username.clear();
             password.clear();
+        }
+    }
+
+    private void openTerminalForSection(int sectionCode){
+        try{
+            System.out.println(sectionCode);
+            String fxmlFile = "";
+            switch(sectionCode){
+                case 1000:
+                    fxmlFile = "/com/example/labiss/MedicalStuff/Pharmacy.fxml";
+                    break;
+                case 1001:
+                    fxmlFile = "/com/example/labiss/MedicalStuff/Chirurgie.fxml";
+                    break;
+                case 1002:
+                    fxmlFile = "/com/example/labiss/MedicalStuff/Cardiologie.fxml";
+                    break;
+                case 1003:
+                    fxmlFile = "/com/example/labiss/MedicalStuff/Pediatrie.fxml";
+                    break;
+                case 1004:
+                    fxmlFile = "/com/example/labiss/MedicalStuff/Ortopedie.fxml";
+                    break;
+                case 1005:
+                    fxmlFile = "/com/example/labiss/MedicalStuff/Neurologie.fxml";
+                    break;
+                default:
+                    showError("Invalid section code");
+                    return;
+            }
+            System.out.println("Attempting to load FXML: " + getClass().getResource(fxmlFile));
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
+            Parent root = loader.load();
+
+            // Schimbă scena curentă
+            Scene currentScene = username.getScene();
+            Stage stage = (Stage) currentScene.getWindow();
+            stage.setScene(new Scene(root));
+            stage.show();
+
+        } catch (IOException e) {
+            showError("Error loading terminal: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 

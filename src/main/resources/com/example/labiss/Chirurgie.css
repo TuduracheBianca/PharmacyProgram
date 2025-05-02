@@ -1,0 +1,18 @@
+.root {
+    -fx-background-image: url("../../../images/i103748-chirurgie.jpg");
+    -fx-background-size: cover;
+    -fx-background-position: center;
+}
+.button {
+    -fx-background-color: #3b5998;  /* Culoare de bază */
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 10px 20px;
+    -fx-background-radius: 10px;
+    -fx-transition: all 0.3s ease-in-out;
+}
+
+.button:hover {
+    -fx-background-color: #5670c9;  /* Culoare mai deschisă */
+    -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.5), 10, 0.5, 0, 0);
+}
