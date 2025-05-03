@@ -66,7 +66,7 @@ public class SQLMedicationRepository implements AutoCloseable {
         }
     }
 
-    private void loadData() {
+    public void loadData() {
 
         String sql = "SELECT * FROM medications";
         try {
@@ -157,6 +157,44 @@ public class SQLMedicationRepository implements AutoCloseable {
         }
     }
 
+    public void updateMedicationStock(int medicationId, int newStock) throws SQLException {
+        String query = "UPDATE medications SET availability = ? WHERE id = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, newStock);
+            stmt.setInt(2, medicationId);
+
+            int rowsAffected = stmt.executeUpdate();
+
+            if (rowsAffected == 0) {
+                throw new SQLException("Actualizarea stocului a eșuat: medicamentul cu ID-ul " + medicationId + " nu a fost găsit");
+            }
+
+            // Actualizare și în lista din memorie
+            for (Medication medication : medications) {
+                if (findMedicationIdByName(medication.getName()) == medicationId) {
+                    medication.setAvailability(newStock);
+                    break;
+                }
+            }
+        }
+    }
+
+    public int findMedicationIdByName(String medicationName) throws SQLException {
+        String query = "SELECT id FROM medications WHERE name = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, medicationName);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("id");
+                }
+            }
+        }
+
+        return -1; // Nu s-a găsit medicamentul
+    }
 
     @Override
     public void close() throws Exception {

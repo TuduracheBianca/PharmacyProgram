@@ -11,6 +11,7 @@ module com.example.labiss {
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
     requires org.xerial.sqlitejdbc;
+    requires java.desktop;
 
     opens com.example.labiss to javafx.fxml;
     exports com.example.labiss;

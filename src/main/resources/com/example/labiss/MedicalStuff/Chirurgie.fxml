@@ -2,50 +2,84 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
 
-<?import javafx.scene.control.cell.PropertyValueFactory?>
 <AnchorPane prefHeight="502.0" prefWidth="882.0" style="-fx-background-image: i103748-chirurgie.jpg;" stylesheets="@../Chirurgie.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.labiss.controller.MedicalOrder">
-   <children>
-      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="89.0" layoutY="14.0" prefHeight="41.0" prefWidth="657.0" style="-fx-background-color: #67b1b4; -fx-background-radius: 15;" text="CHIRURGIE" textFill="#010375">
-         <font>
-            <Font name="Impact" size="27.0" />
-         </font>
-      </Label>
+    <children>
+        <Label alignment="CENTER" contentDisplay="CENTER" layoutX="89.0" layoutY="14.0" prefHeight="41.0" prefWidth="657.0" style="-fx-background-color: #67b1b4; -fx-background-radius: 15;" text="CHIRURGIE" textFill="#010375">
+            <font>
+                <Font name="Impact" size="27.0" />
+            </font>
+        </Label>
 
-      <MenuButton fx:id="Options" alignment="CENTER" layoutX="22.0" layoutY="67.0" mnemonicParsing="false" prefHeight="53.0" prefWidth="134.0" style="-fx-background-radius: 10 20 10 20;" text="OPTIONS" textFill="#67b1b4">
-        <items>
-          <MenuItem fx:id="Medication List" onAction="#showMedicationsTable"  mnemonicParsing="false" text="Creeaza comanda" />
-          <MenuItem fx:id="Cart" onAction="#showOrderTable"  mnemonicParsing="false" text="Afiseaza cos" />
-        </items>
-         <font>
-            <Font name="Sitka Text" size="14.0" />
-         </font>
-      </MenuButton>
+<!--        <MenuButton fx:id="Options" alignment="CENTER" layoutX="22.0" layoutY="67.0" mnemonicParsing="false" prefHeight="53.0" prefWidth="134.0" style="-fx-background-radius: 10 20 10 20;" text="OPTIONS" textFill="#67b1b4">-->
+<!--            <items>-->
+<!--                <MenuItem fx:id="comanda" onAction="#showMedicineList" mnemonicParsing="false" text="Creeaza comanda" />-->
+<!--                <MenuItem fx:id="cos" onAction="#showCart" mnemonicParsing="false" text="Afiseaza cos" />-->
+<!--            </items>-->
+<!--            <font>-->
+<!--                <Font name="Sitka Text" size="14.0" />-->
+<!--            </font>-->
+<!--        </MenuButton>-->
 
-       <!-- Tabel pentru medicamente (vizibil doar când se apasă "Comandă nouă") -->
-      <TableView fx:id="Tabel_medicamente" layoutX="294.0" layoutY="96.0" prefHeight="401.0" prefWidth="544.0" visible="true">
-        <columns>
-          <TableColumn fx:id="colName" prefWidth="200.0" text="Name" />
-          <TableColumn fx:id="colUnit" minWidth="7.20001220703125" prefWidth="129.19998168945312" text="Unit of measure" />
-            <TableColumn fx:id="colAvailability" minWidth="0.0" prefWidth="98.0" text="Availability" />
-            <TableColumn fx:id="colCategory" prefWidth="112.60003662109375" text="Category" />
-        </columns>
-      </TableView>
+        <!-- Buton pentru afișarea listei de medicamente -->
+        <Button fx:id="btnShowMedicineList" layoutX="44.0" layoutY="67.0" mnemonicParsing="false" onAction="#showMedicineList" prefHeight="26.0" prefWidth="120.0" style="-fx-background-color: #67b1b4; -fx-background-radius: 10;" text="Medical List" textFill="#010375">
+            <font>
+                <Font name="Sitka Text" size="14.0" />
+            </font>
+        </Button>
 
-       <!-- Tabel pentru comandă (vizibil doar când se apasă "Coș") -->
-       <TableView fx:id="Tabel_comanda" layoutX="294.0" layoutY="96.0" prefHeight="401.0" prefWidth="544.0" visible="false">
-           <columns>
-               <TableColumn fx:id="colOrderName" prefWidth="200.0" text="Medication" />
-               <TableColumn fx:id="colOrderUnit" prefWidth="150.0" text="Unit" />
-               <TableColumn fx:id="colOrderQuantity" prefWidth="150.0" text="Quantity" >
-                   <cellValueFactory>
-                       <PropertyValueFactory property="quantity" />
-                   </cellValueFactory>
-               </TableColumn>
+        <!-- Buton pentru afișarea coșului -->
+        <Button fx:id="btnShowCart" layoutX="172.0" layoutY="67.0" mnemonicParsing="false" onAction="#showCart" prefHeight="26.0" prefWidth="100.0" style="-fx-background-color: #67b1b4; -fx-background-radius: 10;" text="Cart" textFill="#010375">
+            <font>
+                <Font name="Sitka Text" size="14.0" />
+            </font>
+        </Button>
 
-           </columns>
-       </TableView>
-      <TextField fx:id="search" layoutX="426.0" layoutY="67.0" prefHeight="26.0" prefWidth="412.0" promptText="Search" />
-   </children>
+        <!-- Tabel pentru medicamente (vizibil doar când se apasă "Medical List") -->
+        <TableView fx:id="Tabel_medicamente" layoutX="22.0" layoutY="136.0" prefHeight="320.0" prefWidth="840.0" visible="false">
+            <columns>
+                <TableColumn fx:id="colName" prefWidth="200.0" text="Denumire" />
+                <TableColumn fx:id="colUnit" minWidth="7.20001220703125" prefWidth="180.0" text="Unitate de măsură" />
+                <TableColumn fx:id="colAvailability" minWidth="0.0" prefWidth="180.0" text="Disponibilitate" />
+                <TableColumn fx:id="colCategory" prefWidth="180.0" text="Categorie" />
+            </columns>
+        </TableView>
+
+        <!-- Tabel pentru comandă (vizibil doar când se apasă "Cart") -->
+        <TableView fx:id="Tabel_comanda" layoutX="22.0" layoutY="136.0" prefHeight="320.0" prefWidth="840.0" visible="false">
+            <columns>
+                <TableColumn fx:id="colComandaName" prefWidth="360.0" text="Medicament" />
+                <TableColumn fx:id="colComandaUnit" prefWidth="240.0" text="Unitate" />
+                <TableColumn fx:id="colComandaQuantity" prefWidth="240.0" text="Cantitate" />
+            </columns>
+        </TableView>
+
+        <!-- Câmp pentru căutare -->
+        <TextField fx:id="search" layoutX="299.0" layoutY="74.0" prefHeight="26.0" prefWidth="412.0" promptText="Caută medicamente..." />
+
+        <!-- Buton pentru plasarea comenzii -->
+        <Button fx:id="btnPlaceOrder" layoutX="375.0" layoutY="464.0" mnemonicParsing="false" onAction="#placeOrder" prefHeight="30.0" prefWidth="180.0" style="-fx-background-color: #ff0000; -fx-background-radius: 10;" text="Plasează comanda">
+            <font>
+                <Font name="Sitka Text" size="14.0" />
+            </font>
+         <textFill>
+            <LinearGradient endX="1.0" endY="1.0">
+               <stops>
+                  <Stop>
+                     <color>
+                        <Color />
+                     </color>
+                  </Stop>
+                  <Stop offset="1.0">
+                     <color>
+                        <Color red="1.0" green="1.0" blue="1.0" />
+                     </color>
+                  </Stop>
+               </stops>
+            </LinearGradient>
+         </textFill>
+        </Button>
+    </children>
 </AnchorPane>
