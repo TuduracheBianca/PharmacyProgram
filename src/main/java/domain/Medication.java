@@ -6,13 +6,14 @@ import java.util.Locale;
 import java.util.UUID;
 
 public class Medication {
-//    private UUID id;
+    //    private UUID id;
     private String name;
     private String description;
     private String unitOfMeasure;
     private int availability;
     private String Manufacturer;
     private String Category;
+
 
     public Medication(String name, String description, String unitOfMeasure, int availability, String Manufacturer, String Category) {
 //        this.id = UUID.randomUUID();
@@ -47,6 +48,10 @@ public class Medication {
     public String getDescription() {
         return description;
     }
+
+    public String getCategory() {
+        return Category;
+    }
 //    public String setDescription(String description) {
 //        this.description = description;
 //    }
@@ -55,5 +60,9 @@ public class Medication {
     }
     public int getAvailability() {
         return availability;
+    }
+
+    public void setQuantity(int quantity) {
+        this.availability = quantity;
     }
 }

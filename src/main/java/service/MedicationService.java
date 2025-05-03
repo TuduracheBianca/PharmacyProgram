@@ -3,6 +3,7 @@ package service;
 import domain.Medication;
 import repository.SQLMedicationRepository;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public class MedicationService {
@@ -11,7 +12,7 @@ public class MedicationService {
         this.repository = repository;
     }
 
-    public List<Medication> getAllMedications() {
+    public List<Medication> getAllMedications(){
         return repository.getMedications();
     }
 }

@@ -67,6 +67,7 @@ public class SQLMedicationRepository implements AutoCloseable {
     }
 
     private void loadData() {
+
         String sql = "SELECT * FROM medications";
         try {
             Statement stmt = connection.createStatement();
