@@ -15,8 +15,19 @@ public class SQLUserRepository implements AutoCloseable {
 
     public SQLUserRepository() {
         openConnection();
+        //dropTable();
         createTableIfNotExists();
         loadData();
+    }
+    public void dropTable() {
+        String dropTableSql = "DROP TABLE IF EXISTS Users";
+        try (Statement statement = connection.createStatement()) {
+            statement.execute(dropTableSql);
+            users.clear(); // Clear the in-memory list after dropping the table
+            System.out.println("Users table dropped successfully");
+        } catch (SQLException e) {
+            System.err.println("Error dropping Users table: " + e.getMessage());
+        }
     }
 
     private void openConnection() {

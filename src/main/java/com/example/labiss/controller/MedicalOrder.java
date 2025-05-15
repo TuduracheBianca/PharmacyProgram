@@ -1,6 +1,7 @@
 package com.example.labiss.controller;
 
 import domain.Medication;
+import domain.Order;
 import domain.OrderItem;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -14,21 +15,31 @@ import service.MedicationService;
 import service.OrderService;
 
 public class MedicalOrder {
-    @FXML public MenuButton Options;
-    @FXML public TextField search;
-    @FXML public TableView<Medication> Tabel_medicamente;
-    @FXML public TableColumn<Medication, String> colName;
-    @FXML public TableColumn<Medication, String> colUnit;
-    @FXML public TableColumn<Medication, Integer> colAvailability;
-    @FXML public TableColumn<Medication, String> colCategory;
+    @FXML
+    public TextField search;
+    @FXML
+    public TableView<Medication> Tabel_medicamente;
+    @FXML
+    public TableColumn<Medication, String> colName;
+    @FXML
+    public TableColumn<Medication, String> colUnit;
+    @FXML
+    public TableColumn<Medication, Integer> colAvailability;
+    @FXML
+    public TableColumn<Medication, String> colCategory;
 
-    @FXML public TableView<OrderItem> Tabel_comanda;
-    @FXML public TableColumn<OrderItem, String> colComandaName;
-    @FXML public TableColumn<OrderItem, String> colComandaUnit;
-    @FXML public TableColumn<OrderItem, Integer> colComandaQuantity;
-    @FXML public MenuItem comanda;
-    @FXML public MenuItem cos;
-    @FXML public CheckBox urgentCheckBox;
+    @FXML
+    public TableView<OrderItem> Tabel_comanda;
+    @FXML
+    public TableColumn<OrderItem, String> colComandaName;
+    @FXML
+    public TableColumn<OrderItem, String> colComandaUnit;
+    @FXML
+    public TableColumn<OrderItem, Integer> colComandaQuantity;
+    @FXML
+    public CheckBox urgentCheckBox;
+    @FXML
+    public Button btnPlaceOrder;
 
     private MedicationService medicationService;
     private OrderService orderService;
@@ -36,9 +47,6 @@ public class MedicalOrder {
     private FilteredList<Medication> filteredMedications;
     private ObservableList<OrderItem> orderItems;
 
-    public MedicalOrder() {
-        // Inițializarea serviciilor se va face în metoda initialize()
-    }
 
     @FXML
     public void initialize() {
@@ -54,6 +62,10 @@ public class MedicalOrder {
         // Ascunde ambele tabele inițial
         Tabel_medicamente.setVisible(false);
         Tabel_comanda.setVisible(false);
+        urgentCheckBox.setVisible(false);
+        btnPlaceOrder.setVisible(false);
+        search.setVisible(false);
+
 
         // Configurarea coloanelor pentru tabelul de medicamente
         colName.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
@@ -168,22 +180,24 @@ public class MedicalOrder {
         Tabel_comanda.setItems(orderItems);
     }
 
-    @FXML
-    public void Order() {
-        // Metodă apelată când se selectează opțiunea "Creeaza comanda" din meniu
-        showMedicineList(null);
-    }
 
     @FXML
     public void showMedicineList(ActionEvent event) {
         Tabel_medicamente.setVisible(true);
         Tabel_comanda.setVisible(false);
+        btnPlaceOrder.setVisible(false);
+        urgentCheckBox.setVisible(false);
+        search.setVisible(true);
     }
 
     @FXML
     public void showCart(ActionEvent event) {
         Tabel_medicamente.setVisible(false);
         Tabel_comanda.setVisible(true);
+        btnPlaceOrder.setVisible(true);
+        urgentCheckBox.setVisible(true);
+        search.setVisible(false);
+
 
         // Actualizare listă comandă
         refreshOrderItems();
@@ -199,10 +213,51 @@ public class MedicalOrder {
             medicationList.setAll(medicationService.getAllMedications());
 
             showSucces("Comanda a fost plasată cu succes!");
+            urgentCheckBox.setSelected(false);
         } catch (IllegalArgumentException e) {
             showError(e.getMessage());
         }
     }
+
+//    @FXML
+//    public void editOrderItem() {
+//        OrderItem selectedItem = Tabel_comanda.getSelectionModel().getSelectedItem();
+//        if (selectedItem != null) {
+//            TextInputDialog dialog = new TextInputDialog(String.valueOf(selectedItem.getQuantity()));
+//            dialog.setTitle("editare cantitate");
+//            dialog.setHeaderText("editare " + selectedItem.getMedicationName());
+//            dialog.setContentText("introduceti noua cantitate:");
+//            dialog.showAndWait().ifPresent(quantity -> {
+//                try {
+//                    int qty = Integer.parseInt(quantity);
+//                    if (qty <= 0) {
+//                        showError("cantitate trebuie sa fie mai mare");
+//                        return;
+//                    }
+//                    orderService.updateOrderItemQuantity(selectedItem.getId(), qty);
+//                    refreshOrderItems();
+//                    showSucces("cantitate actualizata");
+//                } catch (NumberFormatException e) {
+//                    showError("Trebuie un nr valid");
+//                }
+//            });
+//        } else {
+//            showError("selectati un medicament din comanda pentru editare");
+//        }
+//    }
+//
+//    @FXML
+//    public void removeOrderItem() {
+//        OrderItem selectedItem = Tabel_comanda.getSelectionModel().getSelectedItem();
+//        if (selectedItem != null) {
+//            orderService.removeOrderItem(selectedItem.getId());
+//            refreshOrderItems();
+//            showSucces("Medicament eliminat din comandă!");
+//        } else {
+//            showError("Selectați un medicament din comandă pentru ștergere");
+//        }
+//    }
+
 
     @FXML
     public void clearOrder() {

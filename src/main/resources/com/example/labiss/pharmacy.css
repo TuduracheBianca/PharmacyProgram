@@ -1,0 +1,15 @@
+/* pharmacy.css */
+.root {
+    -fx-background-image: url("../../../images/seam.jpg");
+    -fx-background-size: cover;
+    -fx-background-position: center;
+    /*-fx-background-repeat: no-repeat;*/
+}
+
+.title {
+    -fx-font-size: 48px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ff0;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.8), 10, 0.5, 0, 1);
+    -fx-alignment: center;
+}

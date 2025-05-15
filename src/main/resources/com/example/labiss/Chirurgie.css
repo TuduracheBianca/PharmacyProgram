@@ -16,3 +16,44 @@
     -fx-background-color: #5670c9;  /* Culoare mai deschisă */
     -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.5), 10, 0.5, 0, 0);
 }
+
+/* Stil pentru tabelul albastru (Tabel_medicamente) */
+.blue-table .table-row-cell:odd {
+    -fx-background-color: #e6f2ff; /* Albastru foarte deschis */
+}
+
+.blue-table .table-row-cell:even {
+    -fx-background-color: #cce0ff; /* Albastru puțin mai intens */
+}
+
+.blue-table .column-header,
+.blue-table .column-header-background .filler {
+    -fx-background-color: #99c2ff; /* Albastru mai închis pentru antet */
+    -fx-text-fill: white;
+}
+
+/* Stil pentru tabelul mov (Tabel_comanda) */
+.purple-table .table-row-cell:odd {
+    -fx-background-color: #f0e6ff; /* Mov foarte deschis (aproape alb) */
+}
+
+.purple-table .table-row-cell:even {
+    -fx-background-color: #e0ccff; /* Mov mai vizibil */
+}
+
+.purple-table .column-header,
+.purple-table .column-header-background .filler {
+    -fx-background-color: #c299ff; /* Mov mai închis pentru antet */
+    -fx-text-fill: white;
+}
+
+/* Stiluri comune pentru ambele tabele */
+.table-view {
+    -fx-border-color: #ddd;
+    -fx-border-width: 1px;
+}
+
+.table-cell {
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 5 10 5 10;
+}

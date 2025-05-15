@@ -1,27 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.net.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="502.0" prefWidth="882.0" style="-fx-background-image: i103748-chirurgie.jpg;" stylesheets="@../Chirurgie.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.labiss.controller.MedicalOrder">
+<AnchorPane prefHeight="502.0" prefWidth="882.0" style="-fx-background-image: i103748-chirurgie.jpg;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.labiss.controller.MedicalOrder">
     <children>
         <Label alignment="CENTER" contentDisplay="CENTER" layoutX="89.0" layoutY="14.0" prefHeight="41.0" prefWidth="657.0" style="-fx-background-color: #67b1b4; -fx-background-radius: 15;" text="CHIRURGIE" textFill="#010375">
             <font>
                 <Font name="Impact" size="27.0" />
             </font>
         </Label>
-
-<!--        <MenuButton fx:id="Options" alignment="CENTER" layoutX="22.0" layoutY="67.0" mnemonicParsing="false" prefHeight="53.0" prefWidth="134.0" style="-fx-background-radius: 10 20 10 20;" text="OPTIONS" textFill="#67b1b4">-->
-<!--            <items>-->
-<!--                <MenuItem fx:id="comanda" onAction="#showMedicineList" mnemonicParsing="false" text="Creeaza comanda" />-->
-<!--                <MenuItem fx:id="cos" onAction="#showCart" mnemonicParsing="false" text="Afiseaza cos" />-->
-<!--            </items>-->
-<!--            <font>-->
-<!--                <Font name="Sitka Text" size="14.0" />-->
-<!--            </font>-->
-<!--        </MenuButton>-->
 
         <!-- Buton pentru afișarea listei de medicamente -->
         <Button fx:id="btnShowMedicineList" layoutX="44.0" layoutY="67.0" mnemonicParsing="false" onAction="#showMedicineList" prefHeight="26.0" prefWidth="120.0" style="-fx-background-color: #67b1b4; -fx-background-radius: 10;" text="Medical List" textFill="#010375">
@@ -38,7 +29,7 @@
         </Button>
 
         <!-- Tabel pentru medicamente (vizibil doar când se apasă "Medical List") -->
-        <TableView fx:id="Tabel_medicamente" layoutX="22.0" layoutY="136.0" prefHeight="320.0" prefWidth="840.0" visible="false">
+        <TableView fx:id="Tabel_medicamente" layoutX="22.0" layoutY="136.0" prefHeight="320.0" prefWidth="840.0" styleClass="purple-table" visible="false">
             <columns>
                 <TableColumn fx:id="colName" prefWidth="200.0" text="Denumire" />
                 <TableColumn fx:id="colUnit" minWidth="7.20001220703125" prefWidth="180.0" text="Unitate de măsură" />
@@ -48,7 +39,7 @@
         </TableView>
 
         <!-- Tabel pentru comandă (vizibil doar când se apasă "Cart") -->
-        <TableView fx:id="Tabel_comanda" layoutX="22.0" layoutY="136.0" prefHeight="320.0" prefWidth="840.0" visible="false">
+        <TableView fx:id="Tabel_comanda" layoutX="22.0" layoutY="136.0" prefHeight="320.0" prefWidth="840.0" styleClass="blue-table" visible="true">
             <columns>
                 <TableColumn fx:id="colComandaName" prefWidth="360.0" text="Medicament" />
                 <TableColumn fx:id="colComandaUnit" prefWidth="240.0" text="Unitate" />
@@ -81,5 +72,15 @@
             </LinearGradient>
          </textFill>
         </Button>
+
+<!--  Buton pentru marcare urgenta      -->
+      <CheckBox fx:id="urgentCheckBox" layoutX="726.0" layoutY="456.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="136.0" style="-fx-background-color: #aa1233; -fx-background-radius: 10;" text="MAKE IT URGENT" textFill="#280303">
+         <font>
+            <Font name="Sitka Text" size="12.0" />
+         </font></CheckBox>
     </children>
+   <stylesheets>
+      <URL value="@../Chirurgie.css" />
+      <URL value="@../Chirurgie.css" />
+   </stylesheets>
 </AnchorPane>

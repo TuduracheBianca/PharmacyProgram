@@ -112,7 +112,7 @@ public class LoginController {
             String fxmlFile = "";
             switch(sectionCode){
                 case 1000:
-                    fxmlFile = "/com/example/labiss/MedicalStuff/Pharmacy.fxml";
+                    fxmlFile = "/com/example/labiss/Pharmacy.fxml";
                     break;
                 case 1001:
                     fxmlFile = "/com/example/labiss/MedicalStuff/Chirurgie.fxml";
