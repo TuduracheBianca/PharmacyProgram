@@ -209,6 +209,46 @@ public class SQLOrderRepository implements AutoCloseable {
         }
     }
 
+    public List<Order> getSortedOrdersByUrgencyAndDate() {
+        List<Order> sortedOrders = new ArrayList<>();
+        String ordersSQL = "SELECT * FROM orders ORDER BY urgent DESC, order_date DESC";
+        String orderItemsSQL = "SELECT * FROM order_items WHERE order_id = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(ordersSQL);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                int orderId = rs.getInt("id");
+                Date orderDate = rs.getDate("order_date");
+                String status = rs.getString("status");
+                boolean urgent = rs.getBoolean("urgent");
+
+                Order order = new Order(orderId, orderDate, status, urgent);
+
+                // Adaugă itemii comenzii
+                try (PreparedStatement itemStmt = connection.prepareStatement(orderItemsSQL)) {
+                    itemStmt.setInt(1, orderId);
+                    ResultSet itemsRs = itemStmt.executeQuery();
+
+                    while (itemsRs.next()) {
+                        OrderItem item = new OrderItem(
+                                itemsRs.getInt("id"),
+                                itemsRs.getInt("medication_id"),
+                                itemsRs.getInt("quantity")
+                        );
+                        order.addOrderItem(item);
+                    }
+                }
+
+                sortedOrders.add(order);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error retrieving sorted orders: " + e.getMessage());
+        }
+
+        return sortedOrders;
+    }
+
     public void updateOrderUrgency(int orderId, boolean urgent) throws SQLException {
         String query = "UPDATE orders SET urgent = ? WHERE id = ?";
 
@@ -261,6 +301,8 @@ public class SQLOrderRepository implements AutoCloseable {
         }
         return null;
     }
+
+
 
     @Override
     public void close() throws Exception {

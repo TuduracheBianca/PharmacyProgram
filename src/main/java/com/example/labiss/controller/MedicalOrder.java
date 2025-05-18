@@ -9,6 +9,7 @@ import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import repository.SQLMedicationRepository;
 import service.MedicationService;
@@ -88,6 +89,7 @@ public class MedicalOrder {
         // Configurare handler pentru dublu-click
         setupDoubleClickHandler();
 
+        setRightClickHandler();
         // Adăugare listener pentru checkbox-ul de urgență
         if (urgentCheckBox != null) {
             urgentCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
@@ -129,6 +131,51 @@ public class MedicalOrder {
                 return false; // Nu s-a găsit potrivire
             });
         });
+    }
+
+    private void setRightClickHandler(){
+        Tabel_comanda.setOnMouseClicked(event -> {
+            if (event.getButton() == MouseButton.SECONDARY) {
+                modifyOrdelete(event);
+            }
+        });
+    }
+
+    private void modifyOrdelete(MouseEvent event) {
+        OrderItem medication = Tabel_comanda.getSelectionModel().getSelectedItem();
+        if (medication != null) {
+            ContextMenu contextMenu = new ContextMenu();
+            MenuItem deleteItem = new MenuItem("Delete");
+            MenuItem editItem = new MenuItem("Edit quantity");
+            editItem.setOnAction(e ->{
+                TextInputDialog dialog = new TextInputDialog();
+                dialog.setTitle("Edit Quantity");
+                dialog.setHeaderText("Edit Quantity for " + medication.getMedicationName());
+                dialog.setContentText("Enter Quantity to edit medication");
+                dialog.showAndWait().ifPresent(quantity -> {
+                    try {
+                        int qty = Integer.parseInt(quantity);
+                        if (qty <= 0) {
+                            showError("Quantity must be greater than 0");
+                            return;
+                        }
+                        medication.setQuantity(qty);
+                        refreshOrderItems();
+                        showSucces("Edited");
+                    }catch (NumberFormatException ex) {
+                        showError("Quantity must be an integer");
+                    }
+                });
+            });
+
+            deleteItem.setOnAction(e -> {
+                orderService.removeMedicationFromOrder(medication.getMedicationName());
+                refreshOrderItems();
+                showSucces("Deleted");
+            });
+            contextMenu.getItems().addAll(editItem,deleteItem);
+            contextMenu.show(Tabel_comanda, event.getScreenX(), event.getScreenY());
+        }
     }
 
     private void setupDoubleClickHandler() {
@@ -174,6 +221,7 @@ public class MedicalOrder {
             });
         }
     }
+
 
     private void refreshOrderItems() {
         orderItems.setAll(orderService.getCurrentOrderItems());

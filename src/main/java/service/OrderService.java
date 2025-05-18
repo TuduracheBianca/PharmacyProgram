@@ -215,4 +215,12 @@ public class OrderService {
         }
         return -1; // Not found
     }
+
+    public void removeMedicationFromOrder(String medicationName) {
+        boolean removed = currentOrderItems.removeIf(item -> item.getMedicationName().equalsIgnoreCase(medicationName));
+        if (!removed) {
+            throw new IllegalArgumentException("Medicamentul " + medicationName + " nu există în comandă.");
+        }
+    }
+
 }
