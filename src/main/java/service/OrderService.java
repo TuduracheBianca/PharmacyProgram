@@ -8,7 +8,9 @@ import repository.SQLOrderRepository;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class OrderService {
     private final MedicationService medicationService;
@@ -101,6 +103,43 @@ public class OrderService {
         newItem.setMedicationName(medicationName);
         newItem.setUnitOfMeasure(medication.getUnitOfMeasure());
         currentOrderItems.add(newItem);
+    }
+
+    public Order getOrderDetailsForItem(OrderItem item) throws SQLException {
+        // Get all orders from the repository
+        List<Order> allOrders = orderRepository.getOrders();
+
+        // Search through all orders to find the one containing our item
+        for (Order order : allOrders) {
+            // Get all items for this order
+            List<OrderItem> orderItems = orderRepository.getOrderItems(order.getId());
+
+            // Check if our item is in this order
+            for (OrderItem orderItem : orderItems) {
+                if (orderItem.getMedicationId() == item.getMedicationId() &&
+                        orderItem.getQuantity() == item.getQuantity()) {
+                    // Found our order - set the items and return
+                    order.setItems(orderItems);
+                    return order;
+                }
+            }
+        }
+
+        throw new IllegalArgumentException("Item not found in any order");
+    }
+
+    public List<Order> getAllOrdersSortedByUrgencyAndDate() {
+        List<Order> orders = orderRepository.getOrders();
+
+        // Sort the orders: first by urgency (urgent first) then by date (newer first)
+        return orders.stream()
+                .sorted(
+                        // First sort by urgency (urgent first)
+                        Comparator.comparing(Order::isUrgent).reversed()
+                                // Then sort by date (newer first)
+                                .thenComparing(Comparator.comparing(Order::getOrderDate).reversed())
+                )
+                .collect(Collectors.toList());
     }
 
     /**

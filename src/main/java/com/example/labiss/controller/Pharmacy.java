@@ -3,6 +3,7 @@ package com.example.labiss.controller;
 import domain.Medication;
 import domain.Order;
 import domain.OrderItem;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -27,13 +28,35 @@ public class Pharmacy {
     private TableColumn<Order, String> colOrderUrgent;
 
     @FXML
-    private TableView<Medication> itemsTable;
+    private TableView<OrderItemWithMedication> itemsTable;
     @FXML
-    private TableColumn<Medication, String> colItemName;
+    private TableColumn<OrderItemWithMedication, String> colItemName;
     @FXML
-    private TableColumn<Medication, String> colItemUnit;
+    private TableColumn<OrderItemWithMedication, String> colItemUnit;
     @FXML
-    private TableColumn<Medication, Integer> colItemQuantity;
+    private TableColumn<OrderItemWithMedication, Integer> colItemQuantity;
+
+    // Helper class to display medication info with quantity
+    public static class OrderItemWithMedication {
+        private final SimpleStringProperty medicationName;
+        private final SimpleStringProperty unitOfMeasure;
+        private final SimpleIntegerProperty quantity;
+
+        public OrderItemWithMedication(String medicationName, String unitOfMeasure, int quantity) {
+            this.medicationName = new SimpleStringProperty(medicationName);
+            this.unitOfMeasure = new SimpleStringProperty(unitOfMeasure);
+            this.quantity = new SimpleIntegerProperty(quantity);
+        }
+
+        public String getMedicationName() { return medicationName.get(); }
+        public String getUnitOfMeasure() { return unitOfMeasure.get(); }
+        public int getQuantity() { return quantity.get(); }
+
+        // Add these property accessor methods for JavaFX
+        public SimpleStringProperty medicationNameProperty() { return medicationName; }
+        public SimpleStringProperty unitOfMeasureProperty() { return unitOfMeasure; }
+        public SimpleIntegerProperty quantityProperty() { return quantity; }
+    }
 
     @FXML
     private ComboBox<String> statusComboBox;
@@ -59,10 +82,10 @@ public class Pharmacy {
         colOrderUrgent.setCellValueFactory(cellData ->
                 new SimpleStringProperty(cellData.getValue().isUrgent() ? "URGENT" : "Normal"));
 
-        // Configure items table for Medication objects
-        colItemName.setCellValueFactory(new PropertyValueFactory<>("name"));
-        colItemUnit.setCellValueFactory(new PropertyValueFactory<>("unitOfMeasure"));
-        colItemQuantity.setCellValueFactory(new PropertyValueFactory<>("availability"));
+        // Configure items table - use property accessor methods instead
+        colItemName.setCellValueFactory(cellData -> cellData.getValue().medicationNameProperty());
+        colItemUnit.setCellValueFactory(cellData -> cellData.getValue().unitOfMeasureProperty());
+        colItemQuantity.setCellValueFactory(cellData -> cellData.getValue().quantityProperty().asObject());
 
         // Setup double-click handler
         setupDoubleClickHandler();
@@ -78,10 +101,16 @@ public class Pharmacy {
     }
 
     private void loadOrders() {
-        orders = FXCollections.observableArrayList(orderService.getAllOrders());
-        ordersTable.setItems(orders);
-        ordersTable.setVisible(true);
-        itemsTable.setVisible(false); // Hide medications table when loading orders
+        try {
+            orders = FXCollections.observableArrayList(orderService.getAllOrdersSortedByUrgencyAndDate());
+            ordersTable.setItems(orders);
+            ordersTable.setVisible(true);
+            itemsTable.setVisible(false); // Hide medications table when loading orders
+        } catch (Exception e) {
+            System.err.println("Error loading orders: " + e.getMessage());
+            e.printStackTrace();
+            showAlert("Error loading orders: " + e.getMessage());
+        }
     }
 
     private void setupDoubleClickHandler() {
@@ -105,29 +134,86 @@ public class Pharmacy {
     }
 
     private void showOrderMedications(Order order) {
-        // Get the medications from order items
-        ObservableList<Medication> medications = FXCollections.observableArrayList();
+        try {
+            // Get the medications from order items
+            ObservableList<OrderItemWithMedication> medicationItems = FXCollections.observableArrayList();
 
-        for (OrderItem item : order.getOrderItems()) {
-            // Fetch the full medication details using the medicationId from the OrderItem
-            Medication medication = medicationService.findMedicationById(item.getMedicationId());
-
-            // If medication exists, add it to the list
-            if (medication != null) {
-                medications.add(medication);
+            if (order.getOrderItems() == null || order.getOrderItems().isEmpty()) {
+                System.out.println("No items found in order #" + order.getId());
+                return;
             }
-        }
 
-        itemsTable.setItems(medications);
+            System.out.println("Processing " + order.getOrderItems().size() + " items for order #" + order.getId());
+
+            for (OrderItem item : order.getOrderItems()) {
+                try {
+                    // Fetch the medication using the medicationId from the OrderItem
+                    int medicationId = item.getMedicationId();
+                    System.out.println("Looking up medication ID: " + medicationId);
+
+                    Medication medication = medicationService.findMedicationById(medicationId);
+
+                    if (medication != null) {
+                        // Create an OrderItemWithMedication to display both medication info and quantity
+                        OrderItemWithMedication displayItem = new OrderItemWithMedication(
+                                medication.getName(),
+                                medication.getUnitOfMeasure(),
+                                item.getQuantity()
+                        );
+                        medicationItems.add(displayItem);
+                        System.out.println("Added medication: " + medication.getName());
+                    } else {
+                        // If medication not found, show with placeholder info
+                        OrderItemWithMedication displayItem = new OrderItemWithMedication(
+                                "ID: " + item.getMedicationId() + " (Not found)",
+                                "N/A",
+                                item.getQuantity()
+                        );
+                        medicationItems.add(displayItem);
+                        System.out.println("Medication not found for ID: " + medicationId);
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error loading medication ID " + item.getMedicationId() + ": " + e.getMessage());
+                    e.printStackTrace();
+                    // Add a placeholder entry to show there was an error
+                    OrderItemWithMedication displayItem = new OrderItemWithMedication(
+                            "Error loading ID: " + item.getMedicationId(),
+                            "Error",
+                            item.getQuantity()
+                    );
+                    medicationItems.add(displayItem);
+                }
+            }
+
+            itemsTable.setItems(medicationItems);
+            System.out.println("Set " + medicationItems.size() + " items in the table");
+
+            // Make sure the items table is visible
+            itemsTable.setVisible(true);
+
+            // Refresh the table to ensure it displays the data
+            itemsTable.refresh();
+
+        } catch (Exception e) {
+            System.err.println("Error in showOrderMedications: " + e.getMessage());
+            e.printStackTrace();
+            showAlert("Error showing medications: " + e.getMessage());
+        }
     }
 
     private void updateOrderStatus() {
         Order selectedOrder = ordersTable.getSelectionModel().getSelectedItem();
         if (selectedOrder != null) {
             String newStatus = statusComboBox.getValue();
-            orderService.updateOrderStatus(selectedOrder.getId(), newStatus);
-            selectedOrder.setStatus(newStatus);
-            ordersTable.refresh();
+            try {
+                orderService.updateOrderStatus(selectedOrder.getId(), newStatus);
+                selectedOrder.setStatus(newStatus);
+                ordersTable.refresh();
+            } catch (Exception e) {
+                System.err.println("Error updating order status: " + e.getMessage());
+                e.printStackTrace();
+                showAlert("Error updating order status: " + e.getMessage());
+            }
         }
     }
 
@@ -135,5 +221,13 @@ public class Pharmacy {
     public void ShowOrders(ActionEvent event) {
         loadOrders();
         statusComboBox.setVisible(false);
+    }
+
+    private void showAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

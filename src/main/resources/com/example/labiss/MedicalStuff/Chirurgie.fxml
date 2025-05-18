@@ -28,6 +28,7 @@
             </font>
         </Button>
 
+
         <!-- Tabel pentru medicamente (vizibil doar când se apasă "Medical List") -->
         <TableView fx:id="Tabel_medicamente" layoutX="22.0" layoutY="136.0" prefHeight="320.0" prefWidth="840.0" styleClass="purple-table" visible="false">
             <columns>
@@ -38,14 +39,26 @@
             </columns>
         </TableView>
 
+
         <!-- Tabel pentru comandă (vizibil doar când se apasă "Cart") -->
-        <TableView fx:id="Tabel_comanda" layoutX="22.0" layoutY="136.0" prefHeight="320.0" prefWidth="840.0" styleClass="blue-table" visible="true">
+        <TableView fx:id="Tabel_comanda" layoutX="22.0" layoutY="136.0" prefHeight="320.0" prefWidth="840.0" styleClass="blue-table" visible="false">
             <columns>
                 <TableColumn fx:id="colComandaName" prefWidth="360.0" text="Medicament" />
                 <TableColumn fx:id="colComandaUnit" prefWidth="240.0" text="Unitate" />
                 <TableColumn fx:id="colComandaQuantity" prefWidth="240.0" text="Cantitate" />
             </columns>
         </TableView>
+
+        <!--tabel pentru istoric comenzi -->
+        <TableView fx:id="Tabel_History" layoutX="22.0" layoutY="136.0" prefHeight="320.0" prefWidth="840.0" styleClass="blue-table" visible="false">
+            <columns>
+<!--                <TableColumn fx:id="colOrderId" prefWidth="126.99999046325684" text="OrderId" />-->
+                <TableColumn fx:id="colOrderDate" prefWidth="189.5999755859375" text="Date" />
+                <TableColumn fx:id="colOrderStatus" prefWidth="262.1999816894531" text="Status" />
+                <TableColumn fx:id="colOrderPriority" prefWidth="258.4000244140625" text="Priority" />
+            </columns>
+        </TableView>
+
 
         <!-- Câmp pentru căutare -->
         <TextField fx:id="search" layoutX="299.0" layoutY="74.0" prefHeight="26.0" prefWidth="412.0" promptText="Caută medicamente..." />
@@ -74,10 +87,14 @@
         </Button>
 
 <!--  Buton pentru marcare urgenta      -->
-      <CheckBox fx:id="urgentCheckBox" layoutX="726.0" layoutY="456.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="136.0" style="-fx-background-color: #aa1233; -fx-background-radius: 10;" text="MAKE IT URGENT" textFill="#280303">
+      <CheckBox fx:id="urgentCheckBox" layoutX="723.0" layoutY="456.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="136.0" style="-fx-background-color: #aa1233; -fx-background-radius: 10;" text="MAKE IT URGENT" textFill="#280303">
          <font>
             <Font name="Sitka Text" size="12.0" />
-         </font></CheckBox>
+         </font>
+      </CheckBox>
+
+        <!--buton pentru afisarea istoricului comenzilor-->
+      <Button fx:id="btnOrdersHistory" layoutX="726.0" layoutY="67.0" mnemonicParsing="false" onAction="#showHistory" text="Orders History" />
     </children>
    <stylesheets>
       <URL value="@../Chirurgie.css" />

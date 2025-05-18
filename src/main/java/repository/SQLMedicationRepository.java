@@ -15,7 +15,7 @@ public class SQLMedicationRepository implements AutoCloseable {
 
     public SQLMedicationRepository() {
         openConnection();
-        //dropMedicationsTable();
+        dropMedicationsTable();
         createTableIfNotExists();
         initDatabase();
         loadData();
@@ -51,13 +51,14 @@ public class SQLMedicationRepository implements AutoCloseable {
 
     private void createTableIfNotExists() {
         String sql = "CREATE TABLE IF NOT EXISTS medications (" +
-                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                     "name TEXT NOT NULL," +
-                     "description TEXT," +
-                     "unit_of_measure TEXT," +
-                     "availability INTEGER NOT NULL," +
-                     "manufacturer TEXT NOT NULL," +
-                     "category TEXT NOT NULL)";
+                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "name TEXT NOT NULL," +
+                "description TEXT," +
+                "unit_of_measure TEXT," +
+                "availability INTEGER NOT NULL," +
+                //"reserved INTEGER NOT NULL DEFAULT 0," + // Adăugat câmpul reserved
+                "manufacturer TEXT NOT NULL," +
+                "category TEXT NOT NULL)";
         try(Statement stmt = connection.createStatement()) {
             stmt.execute(sql);
             System.out.println("Table 'medications' created or already exists");
@@ -67,7 +68,6 @@ public class SQLMedicationRepository implements AutoCloseable {
     }
 
     public void loadData() {
-
         String sql = "SELECT * FROM medications";
         try {
             Statement stmt = connection.createStatement();
@@ -78,6 +78,7 @@ public class SQLMedicationRepository implements AutoCloseable {
                         rs.getString("description"),
                         rs.getString("unit_of_measure"),
                         rs.getInt("availability"),
+                       //rs.getInt("reserved"), // Adăugat parametrul reserved
                         rs.getString("manufacturer"),
                         rs.getString("category")
                 ));
@@ -156,6 +157,73 @@ public class SQLMedicationRepository implements AutoCloseable {
             System.err.println("Error populating medications: " + e.getMessage());
         }
     }
+
+//    public void reserveStock(String medicationName, int quantity) throws SQLException {
+//        String query = "UPDATE medications SET availability = availability - ?, reserved = reserved + ? WHERE name = ? AND availability >= ?";
+//
+//        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+//            stmt.setInt(1, quantity);
+//            stmt.setInt(2, quantity);
+//            stmt.setString(3, medicationName);
+//            stmt.setInt(4, quantity);
+//
+//            int rowsAffected = stmt.executeUpdate();
+//            if (rowsAffected == 0) {
+//                throw new SQLException("Stoc insuficient sau medicament inexistent");
+//            }
+//
+//            // Actualizează și în memorie
+//            for (Medication med : medications) {
+//                if (med.getName().equals(medicationName)) {
+//                    med.setAvailability(med.getAvailability() - quantity);
+//                    med.setQuantityReserved(med.getReserved() + quantity);
+//                    break;
+//                }
+//            }
+//        }
+//    }
+//
+//    public void confirmStockReduction(String medicationName, int quantity) throws SQLException {
+//        String query = "UPDATE medications SET reserved = reserved - ? WHERE name = ? AND reserved >= ?";
+//
+//        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+//            stmt.setInt(1, quantity);
+//            stmt.setString(2, medicationName);
+//            stmt.setInt(3, quantity);
+//
+//            stmt.executeUpdate();
+//
+//            // Actualizează și în memorie
+//            for (Medication med : medications) {
+//                if (med.getName().equals(medicationName)) {
+//                    med.setQuantityReserved(med.getReserved() - quantity);
+//                    break;
+//                }
+//            }
+//        }
+//    }
+//
+//    public void cancelReservation(String medicationName, int quantity) throws SQLException {
+//        String query = "UPDATE medications SET availability = availability + ?, reserved = reserved - ? WHERE name = ? AND reserved >= ?";
+//
+//        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+//            stmt.setInt(1, quantity);
+//            stmt.setInt(2, quantity);
+//            stmt.setString(3, medicationName);
+//            stmt.setInt(4, quantity);
+//
+//            stmt.executeUpdate();
+//
+//            // Actualizează și în memorie
+//            for (Medication med : medications) {
+//                if (med.getName().equals(medicationName)) {
+//                    med.setAvailability(med.getAvailability() + quantity);
+//                    med.setQuantityReserved(med.getReserved() - quantity);
+//                    break;
+//                }
+//            }
+//        }
+//    }
 
     public void updateMedicationStock(int medicationId, int newStock) throws SQLException {
         String query = "UPDATE medications SET availability = ? WHERE id = ?";

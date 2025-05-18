@@ -11,7 +11,7 @@
             <Font name="Bookman Old Style" size="31.0" />
          </font>
       </Label>
-      <Button fx:id="Orders" onAction="#ShowOrders" layoutX="37.0" layoutY="115.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="113.0" style="-fx-border-color: green; -fx-border-style: dotted;" text="View Orders">
+      <Button fx:id="Orders" layoutX="37.0" layoutY="115.0" mnemonicParsing="false" onAction="#ShowOrders" prefHeight="26.0" prefWidth="113.0" style="-fx-border-color: green; -fx-border-style: dotted;" text="View Orders">
          <font>
             <Font name="Arial Black" size="12.0" />
          </font>
@@ -21,9 +21,9 @@
       <TableView fx:id="ordersTable" layoutX="37.0" layoutY="150.0" prefHeight="200.0" prefWidth="668.0">
          <columns>
             <TableColumn fx:id="colOrderId" prefWidth="100.0" text="Order ID" />
-            <TableColumn fx:id="colOrderDate" prefWidth="150.0" text="Date" />
-            <TableColumn fx:id="colOrderStatus" prefWidth="150.0" text="Status" />
-            <TableColumn fx:id="colOrderUrgent" prefWidth="100.0" text="Priority" />
+            <TableColumn fx:id="colOrderDate" prefWidth="209.4000244140625" text="Date" />
+            <TableColumn fx:id="colOrderStatus" prefWidth="143.39996337890625" text="Status" />
+            <TableColumn fx:id="colOrderUrgent" prefWidth="215.20001220703125" text="Priority" />
          </columns>
       </TableView>
 

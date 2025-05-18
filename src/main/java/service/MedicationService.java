@@ -71,6 +71,35 @@ public class MedicationService {
         }
     }
 
+//    public void reserveStock(String medicationName, int quantity) {
+//        try {
+//            repository.reserveStock(medicationName, quantity);
+//        } catch (SQLException e) {
+//            throw new RuntimeException("Eroare la rezervarea stocului", e);
+//        }
+//    }
+//
+//    public void confirmStockReduction(String medicationName, int quantity) {
+//        try {
+//            repository.confirmStockReduction(medicationName, quantity);
+//        } catch (SQLException e) {
+//            throw new RuntimeException("Eroare la confirmarea reducerii de stoc", e);
+//        }
+//    }
+//
+//    public void cancelReservation(String medicationName, int quantity) {
+//        try {
+//            repository.cancelReservation(medicationName, quantity);
+//        } catch (SQLException e) {
+//            throw new RuntimeException("Eroare la anularea rezervării", e);
+//        }
+//    }
+//
+//    public int getAvailableStock(String medicationName) {
+//        Medication med = findMedicationByName(medicationName);
+//        return med != null ? med.getAvailability() - med.getReserved() : 0;
+//    }
+
     public void refreshData() {
         repository.loadData();
     }

@@ -10,6 +10,7 @@ public class Medication {
     private final StringProperty description;
     private final StringProperty unitOfMeasure;
     private final IntegerProperty availability;
+    //private final IntegerProperty reserved;
     private final StringProperty manufacturer;
     private final StringProperty category;
 
@@ -19,9 +20,21 @@ public class Medication {
         this.description = new SimpleStringProperty(description);
         this.unitOfMeasure = new SimpleStringProperty(unitOfMeasure);
         this.availability = new SimpleIntegerProperty(availability);
+        //this.reserved = new SimpleIntegerProperty(reserved);
         this.manufacturer = new SimpleStringProperty(manufacturer);
         this.category = new SimpleStringProperty(category);
     }
+//    public int getReserved() {
+//        return reserved.get();
+//    }
+//
+//    public IntegerProperty reservedProperty() {
+//        return reserved;
+//    }
+//
+//    public void setQuantityReserved(int reserved) {
+//        this.reserved.set(reserved);
+//    }
 
     public String getName() {
         return name.get();

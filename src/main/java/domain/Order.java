@@ -50,6 +50,9 @@ public class Order {
     public void addOrderItem(OrderItem item) {
         this.orderItems.add(item);
     }
+    public void setItems(List<OrderItem> items) {
+        this.orderItems = items;
+    }
 
     @Override
     public String toString() {
