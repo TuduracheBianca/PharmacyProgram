@@ -8,7 +8,7 @@
 
 <AnchorPane prefHeight="502.0" prefWidth="882.0" style="-fx-background-image: i103748-chirurgie.jpg;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.labiss.controller.MedicalOrder">
     <children>
-        <Label alignment="CENTER" contentDisplay="CENTER" layoutX="89.0" layoutY="14.0" prefHeight="41.0" prefWidth="657.0" style="-fx-background-color: #67b1b4; -fx-background-radius: 15;" text="CHIRURGIE" textFill="#010375">
+        <Label alignment="CENTER" contentDisplay="CENTER" layoutX="112.0" layoutY="13.0" prefHeight="41.0" prefWidth="657.0" style="-fx-background-color: #67b1b4; -fx-background-radius: 15;" text="CHIRURGIE" textFill="#010375">
             <font>
                 <Font name="Impact" size="27.0" />
             </font>
@@ -59,6 +59,11 @@
             </columns>
         </TableView>
 
+        <!-- Adaugă acest buton lângă celelalte butoane -->
+        <Button fx:id="backButton" layoutX="14.0" layoutY="14.0" onAction="#goBack" style="-fx-background-color: ff0000;" text="&lt;--" textFill="#050620">
+         <font>
+            <Font name="Bodoni MT Bold" size="24.0" />
+         </font></Button>
 
         <!-- Câmp pentru căutare -->
         <TextField fx:id="search" layoutX="299.0" layoutY="74.0" prefHeight="26.0" prefWidth="412.0" promptText="Caută medicamente..." />
@@ -94,7 +99,7 @@
       </CheckBox>
 
         <!--buton pentru afisarea istoricului comenzilor-->
-      <Button fx:id="btnOrdersHistory"  layoutX="726.0" layoutY="67.0" mnemonicParsing="false" onAction="#showHistory" text="Orders History" />
+      <Button fx:id="btnOrdersHistory" layoutX="726.0" layoutY="67.0" mnemonicParsing="false" onAction="#showHistory" text="Orders History" />
     </children>
    <stylesheets>
       <URL value="@../Chirurgie.css" />

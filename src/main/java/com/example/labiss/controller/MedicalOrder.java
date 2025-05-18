@@ -8,18 +8,24 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import repository.SQLMedicationRepository;
 import service.MedicationService;
 import service.OrderService;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 
 public class MedicalOrder {
     @FXML
@@ -61,6 +67,8 @@ public class MedicalOrder {
     public Button btnPlaceOrder;
     @FXML
     public Button btnOrdersHistory;
+    @FXML
+    public Button backButton;
 
     private MedicationService medicationService;
     private OrderService orderService;
@@ -134,6 +142,17 @@ public class MedicalOrder {
             urgentCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
                 orderService.setUrgent(newValue);
             });
+        }
+    }
+
+    @FXML
+    private void goBack() {
+        try {
+            Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/com/example/labiss/login-register.fxml")));
+            Stage stage = (Stage) backButton.getScene().getWindow();
+            stage.setScene(new Scene(root));
+        } catch (IOException e) {
+            showError("Eroare la navigare: " + e.getMessage());
         }
     }
 

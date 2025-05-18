@@ -1,5 +1,6 @@
 package service;
 
+import com.example.labiss.controller.Pharmacy;
 import domain.Medication;
 import domain.Order;
 import domain.OrderItem;
@@ -259,6 +260,14 @@ public class OrderService {
         boolean removed = currentOrderItems.removeIf(item -> item.getMedicationName().equalsIgnoreCase(medicationName));
         if (!removed) {
             throw new IllegalArgumentException("Medicamentul " + medicationName + " nu există în comandă.");
+        }
+    }
+
+    public List<Pharmacy.MedicationRaport> getWeeklyMedicationReport(int daysBack) {
+        try {
+            return orderRepository.getWeeklyMedicationReport(daysBack);
+        } catch (SQLException e) {
+            throw new RuntimeException("Error generating weekly report: " + e.getMessage());
         }
     }
 

@@ -1,5 +1,6 @@
 package repository;
 
+import com.example.labiss.controller.Pharmacy;
 import domain.Order;
 import domain.OrderItem;
 import org.sqlite.SQLiteDataSource;
@@ -209,6 +210,8 @@ public class SQLOrderRepository implements AutoCloseable {
         }
     }
 
+
+
     public boolean deleteOrder(int orderId) throws SQLException {
         // Check if the order exists
         if (getOrderById(orderId) == null) {
@@ -281,6 +284,32 @@ public class SQLOrderRepository implements AutoCloseable {
         }
 
         return sortedOrders;
+    }
+
+    public List<Pharmacy.MedicationRaport> getWeeklyMedicationReport(int daysBack) throws SQLException {
+        List<Pharmacy.MedicationRaport> reports = new ArrayList<>();
+
+        String sql = "SELECT m.name, m.unit_of_measure, SUM(oi.quantity) as total_quantity " +
+                "FROM order_items oi " +
+                "JOIN medications m ON oi.medication_id = m.id " +
+                "JOIN orders o ON oi.order_id = o.id " +
+                "WHERE o.status = 'PENDING' " +  // Filtrează doar comenzile PENDING
+                "GROUP BY m.name, m.unit_of_measure " +
+                "ORDER BY total_quantity DESC";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                reports.add(new Pharmacy.MedicationRaport(
+                        rs.getString("name"),
+                        rs.getInt("total_quantity"),
+                        rs.getString("unit_of_measure")
+                ));
+            }
+        }
+
+        return reports;
     }
 
     public void updateOrderUrgency(int orderId, boolean urgent) throws SQLException {
