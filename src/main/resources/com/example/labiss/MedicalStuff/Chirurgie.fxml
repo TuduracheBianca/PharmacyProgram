@@ -50,7 +50,7 @@
         </TableView>
 
         <!--tabel pentru istoric comenzi -->
-        <TableView fx:id="Tabel_History" layoutX="22.0" layoutY="136.0" prefHeight="320.0" prefWidth="840.0" styleClass="blue-table" visible="false">
+        <TableView fx:id="Tabel_istoric" layoutX="22.0" layoutY="136.0" prefHeight="320.0" prefWidth="840.0" styleClass="blue-table" visible="false">
             <columns>
 <!--                <TableColumn fx:id="colOrderId" prefWidth="126.99999046325684" text="OrderId" />-->
                 <TableColumn fx:id="colOrderDate" prefWidth="189.5999755859375" text="Date" />
@@ -94,7 +94,7 @@
       </CheckBox>
 
         <!--buton pentru afisarea istoricului comenzilor-->
-      <Button fx:id="btnOrdersHistory" layoutX="726.0" layoutY="67.0" mnemonicParsing="false" onAction="#showHistory" text="Orders History" />
+      <Button fx:id="btnOrdersHistory"  layoutX="726.0" layoutY="67.0" mnemonicParsing="false" onAction="#showHistory" text="Orders History" />
     </children>
    <stylesheets>
       <URL value="@../Chirurgie.css" />

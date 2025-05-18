@@ -209,6 +209,40 @@ public class SQLOrderRepository implements AutoCloseable {
         }
     }
 
+    public boolean deleteOrder(int orderId) throws SQLException {
+        // Check if the order exists
+        if (getOrderById(orderId) == null) {
+            return false;
+        }
+
+        // Use a transaction to ensure data integrity
+        connection.setAutoCommit(false);
+        try {
+            // First delete associated order items
+            String deleteItemsSQL = "DELETE FROM order_items WHERE order_id = ?";
+            try (PreparedStatement pstmt = connection.prepareStatement(deleteItemsSQL)) {
+                pstmt.setInt(1, orderId);
+                pstmt.executeUpdate();
+            }
+
+            // Then delete the order itself
+            String deleteOrderSQL = "DELETE FROM orders WHERE id = ?";
+            try (PreparedStatement pstmt = connection.prepareStatement(deleteOrderSQL)) {
+                pstmt.setInt(1, orderId);
+                int affectedRows = pstmt.executeUpdate();
+
+                connection.commit();
+                return affectedRows > 0;
+            }
+        } catch (SQLException e) {
+            // Roll back the transaction if something goes wrong
+            connection.rollback();
+            throw e;
+        } finally {
+            connection.setAutoCommit(true);
+        }
+    }
+
     public List<Order> getSortedOrdersByUrgencyAndDate() {
         List<Order> sortedOrders = new ArrayList<>();
         String ordersSQL = "SELECT * FROM orders ORDER BY urgent DESC, order_date DESC";

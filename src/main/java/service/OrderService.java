@@ -262,4 +262,17 @@ public class OrderService {
         }
     }
 
+    public boolean deleteOrder(int orderId) {
+        Order orderToDelete = getOrderById(orderId);
+        if (orderToDelete == null) {
+            return false;
+        }
+
+        try {
+            return orderRepository.deleteOrder(orderId);
+        } catch (SQLException e) {
+            throw new IllegalArgumentException("Eroare la ștergerea comenzii: " + e.getMessage());
+        }
+    }
+
 }

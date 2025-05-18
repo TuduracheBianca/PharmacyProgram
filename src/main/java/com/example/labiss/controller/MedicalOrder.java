@@ -19,6 +19,7 @@ import service.MedicationService;
 import service.OrderService;
 
 import java.sql.SQLException;
+import java.util.List;
 
 public class MedicalOrder {
     @FXML
@@ -42,14 +43,18 @@ public class MedicalOrder {
     public TableColumn<OrderItem, String> colComandaUnit;
     @FXML
     public TableColumn<OrderItem, Integer> colComandaQuantity;
+
+    @FXML
+    public TableView<Order> Tabel_istoric;
 //    @FXML
-//    public TableColumn<OrderItem, Integer> colOrderId;
+//    public TableColumn<Order, Integer> colOrderId;
     @FXML
-    public TableColumn<OrderItem, String> colOrderDate;
+    public TableColumn<Order, String> colOrderDate;
     @FXML
-    public TableColumn<OrderItem, String> colOrderStatus;
+    public TableColumn<Order, String> colOrderStatus;
     @FXML
-    public TableColumn<OrderItem, Integer> colOrderPriority;
+    public TableColumn<Order, Boolean> colOrderPriority;
+
     @FXML
     public CheckBox urgentCheckBox;
     @FXML
@@ -62,6 +67,7 @@ public class MedicalOrder {
     private ObservableList<Medication> medicationList;
     private FilteredList<Medication> filteredMedications;
     private ObservableList<OrderItem> orderItems;
+    private ObservableList<Order> orderHistory;
 
 
     @FXML
@@ -74,10 +80,14 @@ public class MedicalOrder {
         // Inițializare liste observabile
         this.medicationList = FXCollections.observableArrayList(medicationService.getAllMedications());
         this.orderItems = FXCollections.observableArrayList();
+        this.orderHistory = FXCollections.observableArrayList();
 
         // Ascunde ambele tabele inițial
         Tabel_medicamente.setVisible(false);
         Tabel_comanda.setVisible(false);
+        if (Tabel_istoric != null) {
+            Tabel_istoric.setVisible(false);
+        }
         urgentCheckBox.setVisible(false);
         btnPlaceOrder.setVisible(false);
         search.setVisible(false);
@@ -94,8 +104,13 @@ public class MedicalOrder {
         colComandaUnit.setCellValueFactory(cellData -> cellData.getValue().unitOfMeasureProperty());
         colComandaQuantity.setCellValueFactory(cellData -> cellData.getValue().quantityProperty().asObject());
 
-        //Configrare tabel istoric
-//        colOrderDate.setCellValueFactory(cellData -> cellData.getValue().);
+        // Configurare coloane pentru istoric comenzi
+        if ( colOrderDate != null && colOrderStatus != null && colOrderPriority != null) {
+            colOrderDate.setCellValueFactory(cellData -> cellData.getValue().orderDateProperty());
+            colOrderStatus.setCellValueFactory(cellData -> cellData.getValue().statusProperty());
+            colOrderPriority.setCellValueFactory(cellData -> cellData.getValue().urgentProperty().asObject());
+        }
+
         // Configurare lista filtrată pentru căutare
         filteredMedications = new FilteredList<>(medicationList, p -> true);
         Tabel_medicamente.setItems(filteredMedications);
@@ -106,7 +121,14 @@ public class MedicalOrder {
         // Configurare handler pentru dublu-click
         setupDoubleClickHandler();
 
+        // Configurare handler pentru click dreapta pe tabelul de comenzi
         setRightClickHandler();
+
+        // Configurare handler pentru click dreapta pe tabelul de istoric
+        if (Tabel_istoric != null) {
+            setupHistoryRightClickHandler();
+        }
+
         // Adăugare listener pentru checkbox-ul de urgență
         if (urgentCheckBox != null) {
             urgentCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
@@ -149,14 +171,6 @@ public class MedicalOrder {
             });
         });
     }
-
-//    private void setRightClickHandler(){
-//        Tabel_comanda.setOnMouseClicked(event -> {
-//            if (event.getButton() == MouseButton.SECONDARY) {
-//                modifyOrdelete(event);
-//            }
-//        });
-//    }
 
     private void setRightClickHandler() {
         Tabel_comanda.setOnMouseClicked(event -> {
@@ -213,6 +227,87 @@ public class MedicalOrder {
         });
     }
 
+    private void setupHistoryRightClickHandler() {
+        Tabel_istoric.setOnMouseClicked(event -> {
+            if (event.getButton() == MouseButton.SECONDARY) {
+                Order selectedOrder = Tabel_istoric.getSelectionModel().getSelectedItem();
+                if (selectedOrder != null) {
+                    ContextMenu contextMenu = new ContextMenu();
+
+                    // Opțiunea pentru a vedea detaliile comenzii
+                    MenuItem detailsItem = new MenuItem("View Order Details");
+                    detailsItem.setOnAction(e -> {
+                        showOrderHistoryDetails(selectedOrder);
+                    });
+
+                    // Adăugăm opțiunea de ștergere doar pentru comenzile cu status "Completed"
+                    if ("Completed".equals(selectedOrder.getStatus())) {
+                        MenuItem deleteItem = new MenuItem("Delete Order");
+                        deleteItem.setOnAction(e -> {
+                            try {
+                                // Apelăm metoda de ștergere din service
+                                orderService.deleteOrder(selectedOrder.getId());
+                                // Actualizăm lista de comenzi
+                                refreshOrderHistory();
+                                showSucces("Order deleted successfully");
+                            } catch (Exception ex) {
+                                showError("Failed to delete order: " + ex.getMessage());
+                            }
+                        });
+                        contextMenu.getItems().addAll(detailsItem, deleteItem);
+                    } else {
+                        contextMenu.getItems().add(detailsItem);
+                    }
+
+                    contextMenu.show(Tabel_istoric, event.getScreenX(), event.getScreenY());
+                }
+            }
+        });
+    }
+
+    private void showOrderHistoryDetails(Order order) {
+        // Creăm un dialog personalizat
+        Dialog<Void> dialog = new Dialog<>();
+        dialog.setTitle("Order History Details");
+        dialog.setHeaderText("Details for Order #" + order.getId());
+
+        // Creăm conținutul dialogului
+        VBox content = new VBox(10);
+        content.setPadding(new Insets(10));
+
+        // Adăugăm informațiile despre comandă
+        content.getChildren().add(new Label("Order ID: " + order.getId()));
+        content.getChildren().add(new Label("Date: " + order.getOrderDate()));
+        content.getChildren().add(new Label("Status: " + order.getStatus()));
+        content.getChildren().add(new Label("Urgent: " + (order.isUrgent() ? "Yes" : "No")));
+
+        // Adăugăm un separator
+        content.getChildren().add(new Separator());
+
+        // Adăugăm titlul pentru medicamente
+        content.getChildren().add(new Label("Medications in this order:"));
+
+        // Adăugăm fiecare medicament din comandă
+        for (OrderItem item : order.getOrderItems()) {
+            HBox itemBox = new HBox(5);
+            itemBox.getChildren().addAll(
+                    new Label(item.getMedicationName() + " - "),
+                    new Label("Quantity: " + item.getQuantity()),
+                    new Label("Unit: " + item.getUnitOfMeasure())
+            );
+            content.getChildren().add(itemBox);
+        }
+
+        // Setăm conținutul dialogului
+        dialog.getDialogPane().setContent(content);
+
+        // Adăugăm butonul de OK
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
+
+        // Afișăm dialogul
+        dialog.showAndWait();
+    }
+
     private void showOrderDetails(OrderItem orderItem) throws SQLException {
         // Obținem toate detaliile comenzii din serviciu
         Order order = orderService.getOrderDetailsForItem(orderItem);
@@ -257,43 +352,6 @@ public class MedicalOrder {
 
         // Afișăm dialogul
         dialog.showAndWait();
-    }
-
-    private void modifyOrdelete(MouseEvent event) {
-        OrderItem medication = Tabel_comanda.getSelectionModel().getSelectedItem();
-        if (medication != null) {
-            ContextMenu contextMenu = new ContextMenu();
-            MenuItem deleteItem = new MenuItem("Delete");
-            MenuItem editItem = new MenuItem("Edit quantity");
-            editItem.setOnAction(e ->{
-                TextInputDialog dialog = new TextInputDialog();
-                dialog.setTitle("Edit Quantity");
-                dialog.setHeaderText("Edit Quantity for " + medication.getMedicationName());
-                dialog.setContentText("Enter Quantity to edit medication");
-                dialog.showAndWait().ifPresent(quantity -> {
-                    try {
-                        int qty = Integer.parseInt(quantity);
-                        if (qty <= 0) {
-                            showError("Quantity must be greater than 0");
-                            return;
-                        }
-                        medication.setQuantity(qty);
-                        refreshOrderItems();
-                        showSucces("Edited");
-                    }catch (NumberFormatException ex) {
-                        showError("Quantity must be an integer");
-                    }
-                });
-            });
-
-            deleteItem.setOnAction(e -> {
-                orderService.removeMedicationFromOrder(medication.getMedicationName());
-                refreshOrderItems();
-                showSucces("Deleted");
-            });
-            contextMenu.getItems().addAll(editItem,deleteItem);
-            contextMenu.show(Tabel_comanda, event.getScreenX(), event.getScreenY());
-        }
     }
 
     private void setupDoubleClickHandler() {
@@ -346,11 +404,21 @@ public class MedicalOrder {
         Tabel_comanda.setItems(orderItems);
     }
 
+    private void refreshOrderHistory() {
+        // Get all orders from the service
+        List<Order> orders = orderService.getAllOrders();
+        orderHistory.setAll(orders);
+        Tabel_istoric.setItems(orderHistory);
+    }
+
 
     @FXML
     public void showMedicineList(ActionEvent event) {
         Tabel_medicamente.setVisible(true);
         Tabel_comanda.setVisible(false);
+        if (Tabel_istoric != null) {
+            Tabel_istoric.setVisible(false);
+        }
         btnPlaceOrder.setVisible(false);
         urgentCheckBox.setVisible(false);
         search.setVisible(true);
@@ -360,6 +428,9 @@ public class MedicalOrder {
     public void showCart(ActionEvent event) {
         Tabel_medicamente.setVisible(false);
         Tabel_comanda.setVisible(true);
+        if (Tabel_istoric != null) {
+            Tabel_istoric.setVisible(false);
+        }
         btnPlaceOrder.setVisible(true);
         urgentCheckBox.setVisible(true);
         search.setVisible(false);
@@ -385,46 +456,6 @@ public class MedicalOrder {
         }
     }
 
-//    @FXML
-//    public void editOrderItem() {
-//        OrderItem selectedItem = Tabel_comanda.getSelectionModel().getSelectedItem();
-//        if (selectedItem != null) {
-//            TextInputDialog dialog = new TextInputDialog(String.valueOf(selectedItem.getQuantity()));
-//            dialog.setTitle("editare cantitate");
-//            dialog.setHeaderText("editare " + selectedItem.getMedicationName());
-//            dialog.setContentText("introduceti noua cantitate:");
-//            dialog.showAndWait().ifPresent(quantity -> {
-//                try {
-//                    int qty = Integer.parseInt(quantity);
-//                    if (qty <= 0) {
-//                        showError("cantitate trebuie sa fie mai mare");
-//                        return;
-//                    }
-//                    orderService.updateOrderItemQuantity(selectedItem.getId(), qty);
-//                    refreshOrderItems();
-//                    showSucces("cantitate actualizata");
-//                } catch (NumberFormatException e) {
-//                    showError("Trebuie un nr valid");
-//                }
-//            });
-//        } else {
-//            showError("selectati un medicament din comanda pentru editare");
-//        }
-//    }
-//
-//    @FXML
-//    public void removeOrderItem() {
-//        OrderItem selectedItem = Tabel_comanda.getSelectionModel().getSelectedItem();
-//        if (selectedItem != null) {
-//            orderService.removeOrderItem(selectedItem.getId());
-//            refreshOrderItems();
-//            showSucces("Medicament eliminat din comandă!");
-//        } else {
-//            showError("Selectați un medicament din comandă pentru ștergere");
-//        }
-//    }
-
-
     @FXML
     public void clearOrder() {
         orderService.clearOrder();
@@ -448,6 +479,19 @@ public class MedicalOrder {
         alert.showAndWait();
     }
 
+    @FXML
     public void showHistory(ActionEvent actionEvent) {
+        // Ascunde celelalte tabele
+        Tabel_medicamente.setVisible(false);
+        Tabel_comanda.setVisible(false);
+        if (Tabel_istoric != null) {
+            Tabel_istoric.setVisible(true);
+        }
+        btnPlaceOrder.setVisible(false);
+        urgentCheckBox.setVisible(false);
+        search.setVisible(false);
+
+        // Încarcă și afișează istoricul comenzilor
+        refreshOrderHistory();
     }
 }
